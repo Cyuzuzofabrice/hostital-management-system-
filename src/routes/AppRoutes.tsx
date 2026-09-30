@@ -15,6 +15,16 @@ import Admissions from "../pages/Admissions";
 import Billing from "../pages/Billing";
 import Reports from "../pages/Reports";
 
+function ProtectedRoute({ children }: { children: React.ReactNode }) {
+  const token = localStorage.getItem("token");
+
+  if (!token) {
+    return <Navigate to="/login" replace />;
+  }
+
+  return <>{children}</>;
+}
+
 export default function AppRoutes() {
   return (
     <Routes>
@@ -22,8 +32,14 @@ export default function AppRoutes() {
       <Route path="/login" element={<Login />} />
       <Route path="/register" element={<Register />} />
 
-      {/* Hospital application */}
-      <Route element={<AppLayout />}>
+      {/* Protected hospital application */}
+      <Route
+        element={
+          <ProtectedRoute>
+            <AppLayout />
+          </ProtectedRoute>
+        }
+      >
         <Route path="/" element={<Navigate to="/dashboard" replace />} />
 
         <Route path="/dashboard" element={<Dashboard />} />
@@ -38,7 +54,7 @@ export default function AppRoutes() {
       </Route>
 
       {/* Unknown routes */}
-      <Route path="*" element={<Navigate to="/dashboard" replace />} />
+      <Route path="*" element={<Navigate to="/login" replace />} />
     </Routes>
   );
 }
